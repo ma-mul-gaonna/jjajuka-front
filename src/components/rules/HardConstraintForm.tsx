@@ -11,15 +11,18 @@ export default function HardConstraintForm({ value, onChange }: Props) {
   return (
     <div className="rule-section">
       <div className="rule-section-header">
-        <span className="rule-section-dot blue" />
-        <h3 className="rule-section-title">기본 운영 규칙 (Hard Constraints)</h3>
+        <span className="rule-section-tag blue">필수</span>
+        <h3 className="rule-section-title">기본 운영 제약 조건</h3>
       </div>
-      <p className="rule-section-desc">체크된 항목은 AI가 반드시 준수합니다.</p>
+      <p className="rule-section-desc">체크된 항목은 스케줄 생성 시 반드시 준수됩니다.</p>
 
       <div className="hard-constraint-grid">
-        <div className="hard-constraint-item">
+        <label className="hard-constraint-item">
           <input type="checkbox" defaultChecked className="rule-checkbox" readOnly />
-          <span className="hard-constraint-label">최소 연속 휴식 시간</span>
+          <div className="hard-constraint-info">
+            <span className="hard-constraint-label">최소 연속 휴식 시간</span>
+            <span className="hard-constraint-hint">교대 근무 사이 최소 휴식</span>
+          </div>
           <div className="hard-constraint-input-wrap">
             <input
               type="number"
@@ -33,11 +36,14 @@ export default function HardConstraintForm({ value, onChange }: Props) {
             />
             <span className="hard-constraint-unit">H</span>
           </div>
-        </div>
+        </label>
 
-        <div className="hard-constraint-item">
+        <label className="hard-constraint-item">
           <input type="checkbox" defaultChecked className="rule-checkbox" readOnly />
-          <span className="hard-constraint-label">최대 연속 근무 제한</span>
+          <div className="hard-constraint-info">
+            <span className="hard-constraint-label">최대 연속 근무 제한</span>
+            <span className="hard-constraint-hint">연속 근무 가능 최대 일수</span>
+          </div>
           <div className="hard-constraint-input-wrap">
             <input
               type="number"
@@ -51,7 +57,7 @@ export default function HardConstraintForm({ value, onChange }: Props) {
             />
             <span className="hard-constraint-unit">일</span>
           </div>
-        </div>
+        </label>
       </div>
     </div>
   );
