@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [dev, main, ci-test]
+    branches: [dev, main]
 
 permissions:
   id-token: write
