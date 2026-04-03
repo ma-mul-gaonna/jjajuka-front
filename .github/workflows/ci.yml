@@ -1,0 +1,46 @@
+name: Deploy to ECR
+
+on:
+  push:
+    branches: [dev, main, ci-test]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+
+      - name: configure aws credential
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::415464488514:role/jjajuka-oidc-role
+          aws-region: ap-northeast-2
+
+      - name: Login ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set ECR Repository and API URL
+        id: set-repo
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/dev" || "${GITHUB_REF}" == "refs/heads/ci-test" ]]; then
+            echo "ECR_REPOSITORY=jjajuka-dev-frontend" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_DEV }}" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "ECR_REPOSITORY=jjajuka-prod-frontend" >> $GITHUB_ENV
+            echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL_PROD }}" >> $GITHUB_ENV
+          fi
+
+      - name: docker image build and push to ecr
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
