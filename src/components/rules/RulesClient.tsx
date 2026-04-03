@@ -43,7 +43,12 @@ export default function RulesClient() {
 
   return (
     <>
-      <div className="rules-header">
+      <motion.div
+        className="rules-header"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <div>
           <h2 className="rules-title">근무 규칙 설정</h2>
           <p className="rules-subtitle">
@@ -51,14 +56,31 @@ export default function RulesClient() {
           </p>
         </div>
         <span className="rules-mode-badge">ADMIN</span>
-      </div>
+      </motion.div>
 
       <div className="rules-body">
-        <HardConstraintForm value={constraint} onChange={setConstraint} />
-        <CustomRuleList rules={customRules} onChange={setCustomRules} />
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.08 }}
+        >
+          <HardConstraintForm value={constraint} onChange={setConstraint} />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.16 }}
+        >
+          <CustomRuleList rules={customRules} onChange={setCustomRules} />
+        </motion.div>
       </div>
 
-      <div className="rules-footer">
+      <motion.div
+        className="rules-footer"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.24 }}
+      >
         <motion.button
           className={`rules-generate-btn ${done ? "done" : ""}`}
           onClick={handleGenerate}
@@ -146,7 +168,7 @@ export default function RulesClient() {
             설정한 규칙 기준으로 최적의 조합을 계산합니다
           </p>
         )}
-      </div>
+      </motion.div>
     </>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -10,7 +10,9 @@ import {
   CalendarCheck,
   ArrowLeftRight,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
 
 interface NavItem {
   label: string;
@@ -48,7 +50,14 @@ const employeeNav: NavItem[] = [
 
 export default function Sidebar({ role }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, clearAuth } = useAuthStore();
   const navItems = role === "admin" ? adminNav : employeeNav;
+
+  const handleLogout = () => {
+    clearAuth();
+    router.push("/login");
+  };
 
   return (
     <aside className="sidebar">
@@ -90,14 +99,20 @@ export default function Sidebar({ role }: SidebarProps) {
       {/* Bottom */}
       <div className="sidebar-bottom">
         <div className="sidebar-user">
-          <div className="sidebar-user-avatar">J</div>
+          <div className="sidebar-user-avatar" suppressHydrationWarning>
+            {user?.name?.[0] ?? "?"}
+          </div>
           <div className="sidebar-user-info">
-            <p className="sidebar-user-name">이재호</p>
+            <p className="sidebar-user-name" suppressHydrationWarning>{user?.name ?? "-"}</p>
             <p className="sidebar-user-role">
               {role === "admin" ? "관리자" : "직원"}
             </p>
           </div>
         </div>
+        <button className="sidebar-logout-btn" onClick={handleLogout}>
+          <LogOut size={15} />
+          <span>로그아웃</span>
+        </button>
       </div>
     </aside>
   );
