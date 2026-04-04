@@ -69,7 +69,7 @@
   /* Shadow */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.10), 0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.04);
 
   /* Radius */
   --radius-sm: 6px;
@@ -110,7 +110,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--text-primary);
-  --font-sans: var(--font-pretendard), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans:
+    var(--font-pretendard), -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -157,7 +159,12 @@
 
 body {
   color: var(--text-primary);
-  font-family: var(--font-pretendard), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    var(--font-pretendard),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -402,7 +409,9 @@ body {
   color: var(--sidebar-text);
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .sidebar-logout-btn:hover {
@@ -1048,13 +1057,13 @@ body {
 }
 
 .rule-section-tag.blue {
-  background: #EFF6FF;
-  color: #2563EB;
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .rule-section-tag.purple {
-  background: #F5F3FF;
-  color: #7C3AED;
+  background: #f5f3ff;
+  color: #7c3aed;
 }
 
 .rule-section-title {
@@ -1095,7 +1104,9 @@ body {
   border-radius: 10px;
   background: var(--gray-50);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 .hard-constraint-item:hover {
@@ -1220,13 +1231,16 @@ body {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .custom-rule-delete:hover {
   background: var(--danger-bg);
   color: var(--danger);
-  border-color: #FECACA;
+  border-color: #fecaca;
 }
 
 .custom-rule-input-wrap {
@@ -1321,7 +1335,7 @@ body {
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255,255,255,0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
   flex-shrink: 0;
@@ -1409,7 +1423,9 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .sch-nav-btn:hover {
@@ -1530,11 +1546,11 @@ body {
 .sch-day-col.weekend,
 .sch-day-col.saturday,
 .sch-day-col.sunday {
-  background: #FAFAFA;
+  background: #fafafa;
 }
 
 .sch-day-col.col-hl {
-  background: #F8F9FF;
+  background: #f8f9ff;
 }
 
 .sch-day-col.col-dim {
@@ -1572,11 +1588,11 @@ body {
 }
 
 .sch-header-day.saturday .sch-hd-name {
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .sch-header-day.sunday .sch-hd-name {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .sch-hd-date {
@@ -1604,9 +1620,15 @@ body {
   color: #fff;
 }
 
-.sch-avatar.grade-a { background: #1D4ED8; }
-.sch-avatar.grade-b { background: #059669; }
-.sch-avatar.grade-c { background: #9CA3AF; }
+.sch-avatar.grade-a {
+  background: #1d4ed8;
+}
+.sch-avatar.grade-b {
+  background: #059669;
+}
+.sch-avatar.grade-c {
+  background: #9ca3af;
+}
 
 .sch-emp-info {
   display: flex;
@@ -1625,9 +1647,15 @@ body {
   font-weight: 600;
 }
 
-.sch-emp-grade.grade-a { color: #2563EB; }
-.sch-emp-grade.grade-b { color: #16A34A; }
-.sch-emp-grade.grade-c { color: #9CA3AF; }
+.sch-emp-grade.grade-a {
+  color: #2563eb;
+}
+.sch-emp-grade.grade-b {
+  color: #16a34a;
+}
+.sch-emp-grade.grade-c {
+  color: #9ca3af;
+}
 
 /* Shift cell */
 .sch-shift-cell {
@@ -1822,7 +1850,9 @@ body {
   background: transparent;
   color: var(--text-disabled);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .sch-toggle-btn.active {
@@ -1853,11 +1883,11 @@ body {
 }
 
 .sch-month-dow.saturday {
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .sch-month-dow.sunday {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .sch-month-grid {
@@ -1875,7 +1905,9 @@ body {
   background: var(--surface);
   cursor: pointer;
   position: relative;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
   overflow: hidden;
 }
 
@@ -1894,17 +1926,17 @@ body {
 .sch-month-cell.weekend,
 .sch-month-cell.saturday,
 .sch-month-cell.sunday {
-  background: #FAFAFA;
+  background: #fafafa;
 }
 
 .sch-month-cell.cur-week {
   border-color: var(--text-primary);
-  background: #FEFEFE;
+  background: #fefefe;
 }
 
 .sch-month-cell.selected {
   border-color: var(--text-primary);
-  box-shadow: 0 0 0 2px rgba(17,17,17,0.08);
+  box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.08);
   z-index: 2;
 }
 
@@ -1927,11 +1959,11 @@ body {
 }
 
 .sch-month-daynum.saturday {
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .sch-month-daynum.sunday {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .sch-month-badge {
@@ -2043,7 +2075,9 @@ body {
   padding: 18px 20px;
   background: var(--surface);
   cursor: default;
-  transition: box-shadow 0.15s, transform 0.15s;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
 }
 
 .db-stat-card:hover {
@@ -2051,8 +2085,8 @@ body {
 }
 
 .db-stat-card.warn {
-  border-color: #FECACA;
-  background: #FFF9F9;
+  border-color: #fecaca;
+  background: #fff9f9;
 }
 
 .db-stat-top {
@@ -2240,7 +2274,7 @@ body {
 }
 
 .db-cov-col.weekend .db-cov-bar-fill {
-  background: #93C5FD;
+  background: #93c5fd;
 }
 
 .db-cov-col.today .db-cov-bar-fill {
@@ -2306,12 +2340,12 @@ body {
 
 .db-violation-item.high {
   background: var(--danger-bg);
-  border-color: #FECACA;
+  border-color: #fecaca;
 }
 
 .db-violation-item.medium {
   background: var(--warning-bg);
-  border-color: #FDE68A;
+  border-color: #fde68a;
 }
 
 .db-violation-icon {
@@ -2435,7 +2469,9 @@ body {
   border-radius: 9px;
   background: var(--surface);
   text-decoration: none;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 
 .db-quick-btn:hover {
@@ -2646,13 +2682,22 @@ body {
   opacity: 0.55;
 }
 
-.emp-col-name   { }
-.emp-col-grade  { }
-.emp-col-role   { }
-.emp-col-phone  { }
-.emp-col-join   { }
-.emp-col-status { }
-.emp-col-action { display: flex; justify-content: flex-end; }
+.emp-col-name {
+}
+.emp-col-grade {
+}
+.emp-col-role {
+}
+.emp-col-phone {
+}
+.emp-col-join {
+}
+.emp-col-status {
+}
+.emp-col-action {
+  display: flex;
+  justify-content: flex-end;
+}
 
 .emp-name-cell {
   display: flex;
@@ -2689,7 +2734,9 @@ body {
   user-select: none;
 }
 
-.emp-role, .emp-phone, .emp-join {
+.emp-role,
+.emp-phone,
+.emp-join {
   font-size: 12px;
   color: var(--text-secondary);
 }
@@ -2732,7 +2779,7 @@ body {
 .emp-delete-btn:hover {
   background: var(--danger-bg);
   color: var(--danger);
-  border-color: #FECACA;
+  border-color: #fecaca;
 }
 
 .emp-empty {
@@ -2761,7 +2808,7 @@ body {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  box-shadow: -8px 0 24px rgba(0,0,0,0.08);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.08);
 }
 
 .emp-drawer-header {
@@ -2929,6 +2976,62 @@ body {
   cursor: not-allowed;
 }
 
+/* ===== Employee Confirm Modal ===== */
+.emp-confirm-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px 20px;
+  width: 320px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14);
+}
+
+.emp-confirm-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.emp-confirm-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.emp-confirm-desc strong {
+  color: var(--text-primary);
+}
+
+.emp-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.emp-confirm-delete-btn {
+  flex: 1;
+  padding: 11px;
+  border: none;
+  border-radius: 9px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.emp-confirm-delete-btn:hover {
+  background: #dc2626;
+}
+
 /* ===== Requests (Worker) ===== */
 .req-stats {
   display: flex;
@@ -3046,7 +3149,10 @@ body {
   font-family: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
 }
 
 .req-type-option.selected {
@@ -3069,7 +3175,10 @@ body {
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
 }
 
 .req-shift-option.selected {
@@ -3104,7 +3213,9 @@ body {
 
 .mys-day-card.today {
   border-color: var(--primary-500);
-  box-shadow: 0 0 0 1.5px var(--primary-500), var(--shadow-sm);
+  box-shadow:
+    0 0 0 1.5px var(--primary-500),
+    var(--shadow-sm);
 }
 
 .mys-day-card.off {
@@ -3132,7 +3243,7 @@ body {
 }
 
 .mys-day-name.weekend {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .mys-day-date {
