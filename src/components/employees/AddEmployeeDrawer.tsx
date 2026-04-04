@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, X, User, Phone, Calendar, Shield, ChevronDown } from "lucide-react";
-import { Grade, GRADE_ORDER, GRADE_META, EMPTY_FORM } from "./types";
+import { Plus, X, User, Phone, Calendar, ChevronDown, Lock, AtSign } from "lucide-react";
+import { EMPTY_FORM, POSITION_OPTIONS, GRADE_META } from "./types";
 import { useState } from "react";
 
 interface AddEmployeeDrawerProps {
@@ -14,8 +14,11 @@ interface AddEmployeeDrawerProps {
 export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeDrawerProps) {
   const [form, setForm] = useState(EMPTY_FORM);
 
+  const selectedPos = POSITION_OPTIONS.find((p) => p.value === form.position)!;
+  const canSubmit = form.name.trim() && form.loginId.trim() && form.password.trim();
+
   const handleAdd = () => {
-    if (!form.name.trim() || !form.role.trim()) return;
+    if (!canSubmit) return;
     onAdd(form);
     setForm(EMPTY_FORM);
   };
@@ -29,7 +32,6 @@ export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeD
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
           <motion.div
             className="emp-backdrop"
             initial={{ opacity: 0 }}
@@ -37,7 +39,6 @@ export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeD
             exit={{ opacity: 0 }}
             onClick={handleClose}
           />
-          {/* Drawer */}
           <motion.div
             className="emp-drawer"
             initial={{ x: "100%" }}
@@ -55,7 +56,9 @@ export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeD
             <div className="emp-drawer-body">
               {/* 이름 */}
               <div className="emp-field">
-                <label className="emp-label"><User size={12} /> 이름 <span className="emp-required">*</span></label>
+                <label className="emp-label">
+                  <User size={12} /> 이름 <span className="emp-required">*</span>
+                </label>
                 <input
                   className="emp-input"
                   placeholder="홍길동"
@@ -64,56 +67,91 @@ export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeD
                 />
               </div>
 
-              {/* 등급 */}
+              {/* 아이디 */}
               <div className="emp-field">
-                <label className="emp-label"><Shield size={12} /> 등급 <span className="emp-required">*</span></label>
-                <div className="emp-grade-select">
-                  {GRADE_ORDER.map((g) => (
+                <label className="emp-label">
+                  <AtSign size={12} /> 아이디 <span className="emp-required">*</span>
+                </label>
+                <input
+                  className="emp-input"
+                  placeholder="hong123"
+                  value={form.loginId}
+                  onChange={(e) => setForm((f) => ({ ...f, loginId: e.target.value }))}
+                />
+              </div>
+
+              {/* 비밀번호 */}
+              <div className="emp-field">
+                <label className="emp-label">
+                  <Lock size={12} /> 비밀번호 <span className="emp-required">*</span>
+                </label>
+                <input
+                  className="emp-input"
+                  type="password"
+                  placeholder="8자 이상"
+                  value={form.password}
+                  onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                />
+              </div>
+
+              {/* 직급 */}
+              <div className="emp-field">
+                <label className="emp-label">
+                  <ChevronDown size={12} /> 직급
+                </label>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {POSITION_OPTIONS.map((p) => (
                     <motion.button
-                      key={g}
-                      className={`emp-grade-option ${form.grade === g ? "selected" : ""}`}
-                      style={form.grade === g ? { background: GRADE_META[g].bg, color: GRADE_META[g].color, borderColor: GRADE_META[g].color + "60" } : {}}
-                      onClick={() => setForm((f) => ({ ...f, grade: g }))}
+                      key={p.value}
+                      className={`emp-grade-option ${form.position === p.value ? "selected" : ""}`}
+                      style={
+                        form.position === p.value
+                          ? {
+                              background: GRADE_META[p.grade].bg,
+                              color: GRADE_META[p.grade].color,
+                              borderColor: GRADE_META[p.grade].color + "60",
+                            }
+                          : {}
+                      }
+                      onClick={() => setForm((f) => ({ ...f, position: p.value }))}
                       whileHover={{ scale: 1.04 }}
                       whileTap={{ scale: 0.96 }}
                     >
-                      <span className="emp-grade-opt-label">{g}등급</span>
-                      <span className="emp-grade-opt-desc">{GRADE_META[g].desc}</span>
+                      <span className="emp-grade-opt-label">{p.label}</span>
+                      <span className="emp-grade-opt-desc">{p.grade}등급</span>
                     </motion.button>
                   ))}
                 </div>
-              </div>
-
-              {/* 직무 */}
-              <div className="emp-field">
-                <label className="emp-label"><ChevronDown size={12} /> 직무 <span className="emp-required">*</span></label>
-                <input
-                  className="emp-input"
-                  placeholder="예) 시니어, 미들, 주니어"
-                  value={form.role}
-                  onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
-                />
+                {form.position && (
+                  <p style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 4 }}>
+                    선택된 직급: {selectedPos.label} ({selectedPos.grade}등급)
+                  </p>
+                )}
               </div>
 
               {/* 연락처 */}
               <div className="emp-field">
-                <label className="emp-label"><Phone size={12} /> 연락처</label>
+                <label className="emp-label">
+                  <Phone size={12} /> 연락처
+                </label>
                 <input
                   className="emp-input"
                   placeholder="010-0000-0000"
-                  value={form.phone}
-                  onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                  value={form.phoneNumber}
+                  onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value }))}
                 />
               </div>
 
               {/* 입사일 */}
               <div className="emp-field">
-                <label className="emp-label"><Calendar size={12} /> 입사일</label>
+                <label className="emp-label">
+                  <Calendar size={12} /> 입사일
+                </label>
                 <input
                   className="emp-input"
                   type="date"
-                  value={form.joinDate}
-                  onChange={(e) => setForm((f) => ({ ...f, joinDate: e.target.value }))}
+                  value={form.hireDate}
+                  onChange={(e) => setForm((f) => ({ ...f, hireDate: e.target.value }))}
                 />
               </div>
             </div>
@@ -123,7 +161,7 @@ export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeD
               <motion.button
                 className="emp-submit-btn"
                 onClick={handleAdd}
-                disabled={!form.name.trim() || !form.role.trim()}
+                disabled={!canSubmit}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
               >
