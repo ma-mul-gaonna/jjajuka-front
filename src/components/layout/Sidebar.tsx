@@ -11,6 +11,7 @@ import {
   ArrowLeftRight,
   ChevronRight,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
@@ -33,6 +34,7 @@ const adminNav: NavItem[] = [
   { label: "근무표 생성", href: "/admin/schedule", icon: <CalendarDays size={18} /> },
   { label: "규칙 설정", href: "/admin/rules", icon: <Settings2 size={18} /> },
   { label: "직원 관리", href: "/admin/employees", icon: <Users size={18} /> },
+  { label: "대체인력 추천", href: "/admin/substitute", icon: <Sparkles size={18} /> },
 ];
 
 const employeeNav: NavItem[] = [

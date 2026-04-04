@@ -1,4 +1,3 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 interface LoginRequest {
   loginId: string;
@@ -12,18 +11,8 @@ export interface LoginResponse {
   authority: "ADMIN" | "USER";
 }
 
-const MOCK_USERS = [
-  { loginId: "admin", password: "admin123", authority: "ADMIN" as const, id: 1, name: "관리자" },
-  { loginId: "worker", password: "worker123", authority: "USER" as const, id: 2, name: "직원" },
-];
-
 export async function login(body: LoginRequest): Promise<LoginResponse> {
-  const mock = MOCK_USERS.find(
-    (u) => u.loginId === body.loginId && u.password === body.password
-  );
-  if (mock) return mock;
-
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
+  const res = await fetch(`/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -32,11 +21,15 @@ export async function login(body: LoginRequest): Promise<LoginResponse> {
 
   if (!res.ok) throw new Error("아이디 또는 비밀번호가 올바르지 않습니다.");
 
-  return res.json();
+  const data = await res.json();
+  return {
+    ...data,
+    authority: data.authority === "ADMIN" ? "ADMIN" : "USER",
+  };
 }
 
 export async function logout(): Promise<void> {
-  await fetch(`${BASE_URL}/api/auth/logout`, {
+  await fetch(`/api/auth/logout`, {
     method: "POST",
     credentials: "include",
   });
