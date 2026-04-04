@@ -4,52 +4,65 @@ import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNotificationStore, Notification } from "@/store/notificationStore";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
-
 export function useNotifications() {
   const { user } = useAuthStore();
   const { setNotifications, addNotification } = useNotificationStore();
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const notiEsRef = useRef<EventSource | null>(null);
+  const vacancyEsRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
     if (!user?.id) return;
 
-    // 초기 알림 목록 fetch
-    fetch(`${BASE_URL}/api/notifications?receiverId=${user.id}`, {
-      credentials: "include",
-    })
+    // 초기 알림 목록 fetch (Next.js 프록시 경유)
+    fetch(`/api/notifications?receiverId=${user.id}`)
       .then((res) => res.json())
       .then((body) => {
         if (body.success) {
           setNotifications(body.data.notifications, body.data.unreadCount);
         }
       })
-      .catch(() => {
-        // 백엔드 미연결 시 무시
-      });
+      .catch(() => {});
 
-    // SSE 구독
-    const es = new EventSource(
-      `${BASE_URL}/api/notifications/subscribe?receiverId=${user.id}`,
-      { withCredentials: true }
-    );
-    eventSourceRef.current = es;
+    // 알림 SSE 구독
+    const notiEs = new EventSource(`/api/notifications/subscribe?receiverId=${user.id}`);
+    notiEsRef.current = notiEs;
 
-    es.onmessage = (e) => {
+    notiEs.onmessage = (e) => {
       try {
         const notification: Notification = JSON.parse(e.data);
         addNotification(notification);
-      } catch {
-        // 파싱 실패 무시
-      }
+      } catch {}
     };
+    notiEs.onerror = () => notiEs.close();
 
-    es.onerror = () => {
-      es.close();
-    };
+    // 결원 SSE 구독
+    const vacancyEs = new EventSource(`/api/vacancies/subscribe`);
+    vacancyEsRef.current = vacancyEs;
+
+    vacancyEs.addEventListener("message", (e) => {
+      try {
+        const payload = JSON.parse(e.data);
+        if (!payload?.vacancy) return;
+
+        const { vacancy } = payload;
+        const notification: Notification = {
+          notificationId: vacancy.vacancyId,
+          title: payload.title ?? "새로운 결원 요청",
+          message: payload.message ?? "",
+          notiType: "VACANCY_ALERT",
+          isRead: false,
+          createdAt: vacancy.createdAt ?? new Date().toISOString(),
+          relatedId: vacancy.vacancyId,
+          relatedType: "VACANCY",
+        };
+        addNotification(notification);
+      } catch {}
+    });
+    vacancyEs.onerror = () => vacancyEs.close();
 
     return () => {
-      es.close();
+      notiEs.close();
+      vacancyEs.close();
     };
   }, [user?.id]);
 }
