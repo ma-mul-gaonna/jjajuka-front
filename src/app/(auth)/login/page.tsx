@@ -20,10 +20,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log("NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
-      console.log("로그인 시도:", { loginId, password });
       const { id, name, loginId: resLoginId, authority } = await login({ loginId, password });
-      console.log("로그인 응답 authority:", authority);
       setAuth(authority, { id, name, loginId: resLoginId });
       router.replace(authority === "ADMIN" ? "/admin/dashboard" : "/worker/my-schedule");
     } catch (err) {
