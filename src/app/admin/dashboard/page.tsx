@@ -1,12 +1,12 @@
 import Header from "@/components/layout/Header";
-import DashboardClient from "@/components/dashboard/DashboardClient";
+import HomeClient from "@/components/home/HomeClient";
 
 export default function DashboardPage() {
   return (
     <div className="page">
-      <Header title="대시보드" />
+      <Header title="홈" />
       <div className="page-content">
-        <DashboardClient />
+        <HomeClient />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard,
+  Home,
   CalendarDays,
   Settings2,
   Users,
@@ -27,11 +27,10 @@ interface SidebarProps {
 
 const adminNav: NavItem[] = [
   {
-    label: "대시보드",
+    label: "홈",
     href: "/admin/dashboard",
-    icon: <LayoutDashboard size={18} />,
+    icon: <Home size={18} />,
   },
-  { label: "근무표 생성", href: "/admin/schedule", icon: <CalendarDays size={18} /> },
   { label: "규칙 설정", href: "/admin/rules", icon: <Settings2 size={18} /> },
   { label: "직원 관리", href: "/admin/employees", icon: <Users size={18} /> },
   { label: "대체인력 추천", href: "/admin/substitute", icon: <Sparkles size={18} /> },

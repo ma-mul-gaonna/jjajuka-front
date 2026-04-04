@@ -3,10 +3,34 @@
 import { motion } from "framer-motion";
 import {
   Users, CalendarCheck, AlertTriangle,
-  ArrowRight, Settings2, ChevronRight, Clock,
+  ArrowRight, Settings2, ChevronRight, Clock, Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { STATS, TODAY_SHIFTS, WEEKLY_COVERAGE, VIOLATIONS, REQUESTS } from "./mockData";
+
+const AI_INSIGHTS = [
+  {
+    type: "warning" as const,
+    message: "이번 주 오후 근무 인력이 평균보다 2명 부족합니다. 충원을 권장합니다.",
+    action: { label: "대체인력 추천 보기", href: "/admin/substitute" },
+  },
+  {
+    type: "danger" as const,
+    message: "박지훈 님의 야간 연속 근무가 4일 감지됐습니다. 규칙 위반 가능성이 있습니다.",
+    action: { label: "규칙 확인", href: "/admin/rules" },
+  },
+  {
+    type: "info" as const,
+    message: "토·일 근무 커버리지가 43%로 낮습니다. 주말 근무표 재검토를 권장합니다.",
+    action: { label: "근무표 보기", href: "/admin/schedule" },
+  },
+];
+
+const INSIGHT_META = {
+  warning: { color: "#b45309", bg: "#fffbeb", border: "#fde68a" },
+  danger:  { color: "#991b1b", bg: "#fef2f2", border: "#fecaca" },
+  info:    { color: "#1e40af", bg: "#eff6ff", border: "#bfdbfe" },
+};
 
 // ─── Helpers ─────────────────────────────────────────────
 const fadeUp = (delay = 0) => ({
@@ -130,6 +154,56 @@ export default function DashboardClient() {
 
         {/* Right column */}
         <div className="db-col-side">
+
+          {/* AI Insights */}
+          <motion.div className="db-card" {...fadeUp(0.16)}>
+            <div className="db-card-header" style={{ marginBottom: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <div style={{
+                  width: 26, height: 26, borderRadius: 8,
+                  background: "linear-gradient(135deg, #6d28d9, #4f46e5)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <Sparkles size={13} color="#fff" />
+                </div>
+                <div>
+                  <h3 className="db-card-title">AI 인사이트</h3>
+                  <p className="db-card-sub">패턴 분석 기반 자동 감지</p>
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {AI_INSIGHTS.map((insight, i) => {
+                const meta = INSIGHT_META[insight.type];
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + i * 0.07 }}
+                    style={{
+                      padding: "10px 12px", borderRadius: 10,
+                      background: meta.bg, border: `1px solid ${meta.border}`,
+                    }}
+                  >
+                    <p style={{ fontSize: 12, color: meta.color, lineHeight: 1.6, marginBottom: 6 }}>
+                      {insight.message}
+                    </p>
+                    <Link
+                      href={insight.action.href}
+                      style={{
+                        fontSize: 11, fontWeight: 600, color: meta.color,
+                        display: "inline-flex", alignItems: "center", gap: 3,
+                        textDecoration: "none", opacity: 0.8,
+                      }}
+                    >
+                      {insight.action.label} <ArrowRight size={10} />
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
 
           {/* Rule violations */}
           <motion.div className="db-card" {...fadeUp(0.18)}>

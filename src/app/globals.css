@@ -1527,7 +1527,9 @@ body {
   border-right: none;
 }
 
-.sch-day-col.weekend {
+.sch-day-col.weekend,
+.sch-day-col.saturday,
+.sch-day-col.sunday {
   background: #FAFAFA;
 }
 
@@ -1569,8 +1571,12 @@ body {
   color: var(--text-primary);
 }
 
-.sch-header-day.weekend .sch-hd-name {
+.sch-header-day.saturday .sch-hd-name {
   color: #3B82F6;
+}
+
+.sch-header-day.sunday .sch-hd-name {
+  color: #EF4444;
 }
 
 .sch-hd-date {
@@ -1846,8 +1852,12 @@ body {
   letter-spacing: 0.3px;
 }
 
-.sch-month-dow.weekend {
+.sch-month-dow.saturday {
   color: #3B82F6;
+}
+
+.sch-month-dow.sunday {
+  color: #EF4444;
 }
 
 .sch-month-grid {
@@ -1881,7 +1891,9 @@ body {
   min-height: 90px;
 }
 
-.sch-month-cell.weekend {
+.sch-month-cell.weekend,
+.sch-month-cell.saturday,
+.sch-month-cell.sunday {
   background: #FAFAFA;
 }
 
@@ -1912,6 +1924,14 @@ body {
 .sch-month-daynum.cur {
   font-weight: 800;
   color: var(--text-primary);
+}
+
+.sch-month-daynum.saturday {
+  color: #3B82F6;
+}
+
+.sch-month-daynum.sunday {
+  color: #EF4444;
 }
 
 .sch-month-badge {

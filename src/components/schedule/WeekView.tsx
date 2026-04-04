@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import {
-  ShiftType,
   WeekSchedule,
   EMPLOYEES,
   DAYS,
@@ -34,7 +33,7 @@ export default function WeekView({ schedule, genKey, hoveredRow, hoveredCol, set
         <div className="sch-row sch-header-row">
           <div className="sch-emp-col sch-corner" />
           {DAYS.map((day, d) => (
-            <div key={d} className={`sch-day-col sch-header-day ${d >= 5 ? "weekend" : ""} ${hoveredCol === d ? "col-hl" : ""}`}>
+            <div key={d} className={`sch-day-col sch-header-day ${d === 0 ? "sunday" : d === 6 ? "saturday" : ""} ${hoveredCol === d ? "col-hl" : ""}`}>
               <span className="sch-hd-name">{day}</span>
               <span className="sch-hd-date">{DATES[d]}</span>
             </div>
@@ -55,7 +54,7 @@ export default function WeekView({ schedule, genKey, hoveredRow, hoveredCol, set
               const meta = SHIFT_META[schedule[`${emp.id}-${d}`]];
               const dimCol = hoveredCol !== null && hoveredCol !== d && hoveredRow === null;
               return (
-                <div key={d} className={`sch-day-col sch-shift-cell ${d >= 5 ? "weekend" : ""} ${hoveredCol === d ? "col-hl" : ""} ${dimCol ? "col-dim" : ""}`}
+                <div key={d} className={`sch-day-col sch-shift-cell ${d === 0 ? "sunday" : d === 6 ? "saturday" : ""} ${hoveredCol === d ? "col-hl" : ""} ${dimCol ? "col-dim" : ""}`}
                   onMouseEnter={() => setHoveredCol(d)} onMouseLeave={() => setHoveredCol(null)}
                   onClick={() => toggleShift(emp.id, d)}
                 >

@@ -10,16 +10,17 @@ import {
   SHIFT_META,
   MONTH_START_OFFSET,
   MONTH_DAYS,
-  CURRENT_WEEK,
+  TODAY,
 } from "./types";
 import Legend from "./Legend";
 
 interface MonthViewProps {
   schedule: MonthSchedule;
   genKey: number;
+  vacancyDays?: Record<number, string[]>;
 }
 
-export default function MonthView({ schedule, genKey }: MonthViewProps) {
+export default function MonthView({ schedule, genKey, vacancyDays = {} }: MonthViewProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const totalCells = MONTH_START_OFFSET + MONTH_DAYS;
@@ -43,7 +44,7 @@ export default function MonthView({ schedule, genKey }: MonthViewProps) {
       {/* Day-of-week header */}
       <div className="sch-month-dow-header">
         {DAYS.map((day, i) => (
-          <div key={day} className={`sch-month-dow ${i >= 5 ? "weekend" : ""}`}>{day}</div>
+          <div key={day} className={`sch-month-dow ${i === 0 ? "sunday" : i === 6 ? "saturday" : ""}`}>{day}</div>
         ))}
       </div>
 
@@ -52,10 +53,14 @@ export default function MonthView({ schedule, genKey }: MonthViewProps) {
         {Array.from({ length: rows * 7 }).map((_, cellIdx) => {
           const day = cellIdx - MONTH_START_OFFSET + 1;
           const isValid = day >= 1 && day <= MONTH_DAYS;
-          const isCurWeek = CURRENT_WEEK.includes(day);
-          const isWeekend = cellIdx % 7 >= 5;
+          const isCurWeek = day === TODAY;
+          const colIdx = cellIdx % 7;
+          const isSunday = colIdx === 0;
+          const isSaturday = colIdx === 6;
+          const isWeekend = isSunday || isSaturday;
           const isSelected = selectedDay === day;
           const summary = isValid ? getDaySummary(day) : null;
+          const vacancyNames = isValid ? (vacancyDays[day] ?? []) : [];
 
           return (
             <motion.div
@@ -74,9 +79,26 @@ export default function MonthView({ schedule, genKey }: MonthViewProps) {
               {isValid && (
                 <>
                   <div className="sch-month-top">
-                    <span className={`sch-month-daynum ${isCurWeek ? "cur" : ""}`}>{day}</span>
-                    {isCurWeek && <span className="sch-month-badge">이번주</span>}
+                    <span className={`sch-month-daynum ${isCurWeek ? "cur" : ""} ${isSunday ? "sunday" : isSaturday ? "saturday" : ""}`}>{day}</span>
+                    {isCurWeek && <span className="sch-month-badge">오늘</span>}
                   </div>
+
+                  {vacancyNames.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 4 }}>
+                      {vacancyNames.map((name) => (
+                        <div key={name} style={{
+                          display: "inline-flex", alignItems: "center", gap: 3,
+                          padding: "2px 6px", borderRadius: 5,
+                          background: "#fef2f2", border: "1px solid #fca5a5",
+                        }}>
+                          <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#ef4444", flexShrink: 0 }} />
+                          <span style={{ fontSize: 10, fontWeight: 600, color: "#dc2626", whiteSpace: "nowrap" }}>
+                            {name} 결원
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   <div className="sch-month-summary">
                     {(["AM", "PM", "NIGHT"] as ShiftType[]).map((type) => {

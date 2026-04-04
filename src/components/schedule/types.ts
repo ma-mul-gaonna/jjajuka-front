@@ -17,7 +17,7 @@ export const EMPLOYEES: Employee[] = [
   { id: 7, name: "윤성민", grade: "A" },
 ];
 
-export const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
+export const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
 export const DATES = ["03/23", "03/24", "03/25", "03/26", "03/27", "03/28", "03/29"];
 export const SHIFT_CYCLE: ShiftType[] = ["AM", "PM", "NIGHT", "OFF"];
 
@@ -28,10 +28,11 @@ export const SHIFT_META: Record<ShiftType, { label: string; time: string; bg: st
   OFF:   { label: "휴무", time: "—",     bg: "#F9FAFB", color: "#9CA3AF", dot: "#E5E7EB" },
 };
 
-// March 2026: starts on Sunday → Mon-first offset = 6
-export const MONTH_START_OFFSET = 6;
+// March 2026: starts on Sunday → Sun-first offset = 0
+export const MONTH_START_OFFSET = 0;
 export const MONTH_DAYS = 31;
 export const CURRENT_WEEK = [23, 24, 25, 26, 27, 28, 29];
+export const TODAY = 25; // 2026-03-25 (목)
 
 // ─── Data generators ─────────────────────────────────────
 export function makeWeekSchedule(): WeekSchedule {

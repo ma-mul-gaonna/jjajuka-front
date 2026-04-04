@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, ChevronLeft, ChevronRight, Download, AlignJustify, LayoutGrid } from "lucide-react";
 import {
@@ -16,12 +16,21 @@ import MonthView from "./MonthView";
 
 export default function ScheduleClient() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
-  const [weekSchedule, setWeekSchedule] = useState<WeekSchedule>(() => makeWeekSchedule());
-  const [monthSchedule, setMonthSchedule] = useState<MonthSchedule>(() => makeMonthSchedule());
+  const [weekSchedule, setWeekSchedule] = useState<WeekSchedule>({});
+  const [monthSchedule, setMonthSchedule] = useState<MonthSchedule>({});
   const [genKey, setGenKey] = useState(0);
   const [generating, setGenerating] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredCol, setHoveredCol] = useState<number | null>(null);
+
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      setWeekSchedule(makeWeekSchedule());
+      setMonthSchedule(makeMonthSchedule());
+      setMounted(true);
+    });
+  }, []);
 
   const handleGenerate = async () => {
     if (generating) return;
@@ -101,29 +110,35 @@ export default function ScheduleClient() {
       </div>
 
       {/* View content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={viewMode}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.18, ease: "easeOut" }}
-        >
-          {viewMode === "week" ? (
-            <WeekView
-              schedule={weekSchedule}
-              genKey={genKey}
-              hoveredRow={hoveredRow}
-              hoveredCol={hoveredCol}
-              setHoveredRow={setHoveredRow}
-              setHoveredCol={setHoveredCol}
-              toggleShift={toggleShift}
-            />
-          ) : (
-            <MonthView schedule={monthSchedule} genKey={genKey} />
-          )}
-        </motion.div>
-      </AnimatePresence>
+      {!mounted ? (
+        <div style={{ height: 400, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", fontSize: 13 }}>
+          로딩 중...
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={viewMode}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+          >
+            {viewMode === "week" ? (
+              <WeekView
+                schedule={weekSchedule}
+                genKey={genKey}
+                hoveredRow={hoveredRow}
+                hoveredCol={hoveredCol}
+                setHoveredRow={setHoveredRow}
+                setHoveredCol={setHoveredCol}
+                toggleShift={toggleShift}
+              />
+            ) : (
+              <MonthView schedule={monthSchedule} genKey={genKey} />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      )}
     </>
   );
 }
