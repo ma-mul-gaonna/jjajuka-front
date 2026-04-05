@@ -9,16 +9,20 @@ function openSSE(
   eventName: string,
   onMessage: (e: MessageEvent) => void,
   retryRef: { current: ReturnType<typeof setTimeout> | null },
+  attempt = 0,
 ): EventSource {
+  const MAX_RETRIES = 3;
   const es = new EventSource(url);
 
   es.addEventListener(eventName, onMessage as EventListener);
 
   es.onerror = () => {
     es.close();
-    retryRef.current = setTimeout(() => {
-      openSSE(url, eventName, onMessage, retryRef);
-    }, 5000);
+    if (attempt < MAX_RETRIES) {
+      retryRef.current = setTimeout(() => {
+        openSSE(url, eventName, onMessage, retryRef, attempt + 1);
+      }, 5000);
+    }
   };
 
   return es;
@@ -27,9 +31,7 @@ function openSSE(
 export function useNotifications() {
   const { user, authority } = useAuthStore();
   const { setNotifications, addNotification } = useNotificationStore();
-  const notiEsRef    = useRef<EventSource | null>(null);
   const vacancyEsRef = useRef<EventSource | null>(null);
-  const notiRetry    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const vacancyRetry = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -37,26 +39,13 @@ export function useNotifications() {
 
     // 초기 알림 목록 fetch
     fetch(`/api/notifications`)
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : null)
       .then((body) => {
-        if (body.success) {
+        if (body?.success) {
           setNotifications(body.data.notifications, body.data.unreadCount);
         }
       })
       .catch(() => {});
-
-    // 알림 SSE (message 이벤트)
-    notiEsRef.current = openSSE(
-      `/api/notifications/subscribe`,
-      "message",
-      (e) => {
-        try {
-          const notification: Notification = JSON.parse(e.data);
-          addNotification(notification);
-        } catch {}
-      },
-      notiRetry,
-    );
 
     // 결원 SSE (vacancy-update 이벤트)
     vacancyEsRef.current = openSSE(
@@ -78,15 +67,18 @@ export function useNotifications() {
             relatedType: "VACANCY",
           };
           addNotification(notification);
+
+          // 수락/거절 시 swap 상태 갱신 이벤트 발행
+          if (vacancy.status === "ACCEPTED" || vacancy.status === "REJECTED") {
+            window.dispatchEvent(new CustomEvent("swap-status-updated"));
+          }
         } catch {}
       },
       vacancyRetry,
     );
 
     return () => {
-      notiEsRef.current?.close();
       vacancyEsRef.current?.close();
-      if (notiRetry.current)    clearTimeout(notiRetry.current);
       if (vacancyRetry.current) clearTimeout(vacancyRetry.current);
     };
   }, [user?.id]);

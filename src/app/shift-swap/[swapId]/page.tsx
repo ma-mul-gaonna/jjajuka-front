@@ -76,7 +76,7 @@ export default function ShiftSwapPage() {
     setAction("loading");
     try {
       const res = await fetch(`/api/shift-swap/${swapId}/decision`, {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ swapStatus: "ACCEPTED", targetScheduleId: selectedScheduleId }),
       });
@@ -91,7 +91,7 @@ export default function ShiftSwapPage() {
     setAction("loading");
     try {
       const res = await fetch(`/api/shift-swap/${swapId}/decision`, {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ swapStatus: "REJECTED" }),
       });

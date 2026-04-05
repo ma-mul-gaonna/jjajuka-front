@@ -71,10 +71,12 @@ export default function ShiftSwapReceivedClient() {
     if (!acceptModal || !selectedScheduleId) return;
     setActing(acceptModal.swapRequestId);
     try {
+      const body = { swapStatus: "ACCEPTED", targetScheduleId: selectedScheduleId };
+      console.log("[decision accept] url:", `/api/shift-swap/${acceptModal.swapRequestId}/decision`, "body:", body);
       const res = await fetch(`/api/shift-swap/${acceptModal.swapRequestId}/decision`, {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ swapStatus: "ACCEPTED", targetScheduleId: selectedScheduleId }),
+        body: JSON.stringify(body),
       });
       if (res.ok) {
         setSwapRequests((prev) =>
@@ -90,10 +92,12 @@ export default function ShiftSwapReceivedClient() {
   const handleReject = async (swapRequestId: number) => {
     setActing(swapRequestId);
     try {
+      const body = { swapStatus: "REJECTED" };
+      console.log("[decision reject] url:", `/api/shift-swap/${swapRequestId}/decision`, "body:", body);
       const res = await fetch(`/api/shift-swap/${swapRequestId}/decision`, {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ swapStatus: "REJECTED" }),
+        body: JSON.stringify(body),
       });
       if (res.ok) {
         setSwapRequests((prev) =>
