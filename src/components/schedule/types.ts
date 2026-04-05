@@ -4,7 +4,38 @@ export type ViewMode = "week" | "month";
 export type WeekSchedule = Record<string, ShiftType>;
 export type MonthSchedule = Record<string, ShiftType>; // key: `${empId}-${dayOfMonth}`
 
-export interface Employee { id: number; name: string; grade: "A" | "B" | "C"; }
+export interface Employee { id: number; name: string; grade?: "A" | "B" | "C"; }
+
+// ─── API types ───────────────────────────────────────────
+export interface ScheduleAssignment {
+  scheduleId: number;
+  memberId: number;
+  memberName: string;
+  shiftType: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface ScheduleDay {
+  date: string;
+  dayCount: number;
+  eveningCount: number;
+  nightCount: number;
+  assignments: ScheduleAssignment[];
+}
+
+export interface ScheduleGroupResponse {
+  scheduleGroupId: number;
+  scheduleYearMonth: string;
+  days: ScheduleDay[];
+}
+
+export const SHIFT_API_TO_TYPE: Record<string, ShiftType> = {
+  DAY:     "AM",
+  EVENING: "PM",
+  NIGHT:   "NIGHT",
+  OFF:     "OFF",
+};
 
 // ─── Constants ───────────────────────────────────────────
 export const EMPLOYEES: Employee[] = [

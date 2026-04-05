@@ -81,7 +81,8 @@ export default function EmployeesClient() {
         loginId: form.loginId.trim(),
         password: form.password,
         authority: "USER",
-        position: form.position || null,
+        position: form.position.trim() || null,
+        skills: form.skills,
         phoneNumber: form.phoneNumber.trim() || null,
         hireDate: form.hireDate || null,
         employmentStatus: "ACTIVE",
@@ -95,7 +96,11 @@ export default function EmployeesClient() {
 
   const deleteEmployee = async (id: number) => {
     setDeleteId(id);
-    await fetch(`/api/members/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/members/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      setDeleteId(null);
+      return;
+    }
     setTimeout(() => {
       setEmployees((prev) => prev.filter((e) => e.id !== id));
       setDeleteId(null);

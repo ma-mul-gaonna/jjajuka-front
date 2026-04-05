@@ -1,9 +1,15 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, X, User, Phone, Calendar, ChevronDown, Lock, AtSign } from "lucide-react";
-import { EMPTY_FORM, POSITION_OPTIONS, GRADE_META } from "./types";
+import { Plus, X, User, Phone, Calendar, Lock, AtSign, Briefcase } from "lucide-react";
+import { EMPTY_FORM, GRADE_META, Skills } from "./types";
 import { useState } from "react";
+
+const SKILLS_OPTIONS: { value: Skills; label: string; grade: keyof typeof GRADE_META }[] = [
+  { value: "GRADE_A", label: "A등급", grade: "A" },
+  { value: "GRADE_B", label: "B등급", grade: "B" },
+  { value: "GRADE_C", label: "C등급", grade: "C" },
+];
 
 interface AddEmployeeDrawerProps {
   open: boolean;
@@ -14,7 +20,6 @@ interface AddEmployeeDrawerProps {
 export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeDrawerProps) {
   const [form, setForm] = useState(EMPTY_FORM);
 
-  const selectedPos = POSITION_OPTIONS.find((p) => p.value === form.position)!;
   const canSubmit = form.name.trim() && form.loginId.trim() && form.password.trim();
 
   const handleAdd = () => {
@@ -97,36 +102,43 @@ export default function AddEmployeeDrawer({ open, onClose, onAdd }: AddEmployeeD
               {/* 직급 */}
               <div className="emp-field">
                 <label className="emp-label">
-                  <ChevronDown size={12} /> 직급
+                  <Briefcase size={12} /> 직급
                 </label>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {POSITION_OPTIONS.map((p) => (
+                <input
+                  className="emp-input"
+                  placeholder="예: 사원, 대리, 과장"
+                  value={form.position}
+                  onChange={(e) => setForm((f) => ({ ...f, position: e.target.value }))}
+                />
+              </div>
+
+              {/* 등급 */}
+              <div className="emp-field">
+                <label className="emp-label">
+                  등급
+                </label>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {SKILLS_OPTIONS.map((s) => (
                     <motion.button
-                      key={p.value}
-                      className={`emp-grade-option ${form.position === p.value ? "selected" : ""}`}
+                      key={s.value}
+                      className={`emp-grade-option ${form.skills === s.value ? "selected" : ""}`}
                       style={
-                        form.position === p.value
+                        form.skills === s.value
                           ? {
-                              background: GRADE_META[p.grade].bg,
-                              color: GRADE_META[p.grade].color,
-                              borderColor: GRADE_META[p.grade].color + "60",
+                              background: GRADE_META[s.grade].bg,
+                              color: GRADE_META[s.grade].color,
+                              borderColor: GRADE_META[s.grade].color + "60",
                             }
                           : {}
                       }
-                      onClick={() => setForm((f) => ({ ...f, position: p.value }))}
+                      onClick={() => setForm((f) => ({ ...f, skills: s.value }))}
                       whileHover={{ scale: 1.04 }}
                       whileTap={{ scale: 0.96 }}
                     >
-                      <span className="emp-grade-opt-label">{p.label}</span>
-                      <span className="emp-grade-opt-desc">{p.grade}등급</span>
+                      <span className="emp-grade-opt-label">{s.label}</span>
                     </motion.button>
                   ))}
                 </div>
-                {form.position && (
-                  <p style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 4 }}>
-                    선택된 직급: {selectedPos.label} ({selectedPos.grade}등급)
-                  </p>
-                )}
               </div>
 
               {/* 연락처 */}

@@ -898,12 +898,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--background);
+  background: var(--gray-100);
 }
 
 .login-box {
   width: 100%;
   max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
   padding: 48px 40px;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -915,7 +919,7 @@ body {
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.5px;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 }
 
 .login-sub {
@@ -928,6 +932,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .login-field {
@@ -3012,6 +3018,7 @@ body {
 .emp-confirm-actions {
   display: flex;
   gap: 8px;
+  justify-content: center;
 }
 
 .emp-confirm-delete-btn {

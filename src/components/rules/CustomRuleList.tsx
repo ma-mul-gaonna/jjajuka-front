@@ -7,22 +7,18 @@ import { CustomRule } from "@/types/rules";
 
 interface Props {
   rules: CustomRule[];
-  onChange: (rules: CustomRule[]) => void;
+  onAdd: (text: string) => void;
+  onDelete: (id: number) => void;
 }
 
-export default function CustomRuleList({ rules, onChange }: Props) {
+export default function CustomRuleList({ rules, onAdd, onDelete }: Props) {
   const [input, setInput] = useState("");
 
   const addRule = () => {
     const text = input.trim();
     if (!text) return;
-    const newRule: CustomRule = { id: Date.now(), text };
-    onChange([...rules, newRule]);
+    onAdd(text);
     setInput("");
-  };
-
-  const deleteRule = (id: number) => {
-    onChange(rules.filter((r) => r.id !== id));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -59,7 +55,7 @@ export default function CustomRuleList({ rules, onChange }: Props) {
               <span className="custom-rule-text">{rule.text}</span>
               <motion.button
                 className="custom-rule-delete"
-                onClick={() => deleteRule(rule.id)}
+                onClick={() => onDelete(rule.id)}
                 aria-label="규칙 삭제"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -85,15 +81,17 @@ export default function CustomRuleList({ rules, onChange }: Props) {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           rows={3}
+          disabled={false}
         />
         <motion.button
           className="custom-rule-add-btn"
           onClick={addRule}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
+          disabled={false}
+          whileHover={!false ? { scale: 1.02 } : {}}
+          whileTap={!false ? { scale: 0.97 } : {}}
         >
           <Plus size={14} />
-          규칙 추가
+          {false ? "추가 중..." : "규칙 추가"}
         </motion.button>
       </div>
     </div>

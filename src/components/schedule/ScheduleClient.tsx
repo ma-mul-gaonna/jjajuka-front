@@ -7,44 +7,88 @@ import {
   ViewMode,
   WeekSchedule,
   MonthSchedule,
+  Employee,
+  ScheduleGroupResponse,
+  SHIFT_API_TO_TYPE,
   SHIFT_CYCLE,
-  makeWeekSchedule,
-  makeMonthSchedule,
+  CURRENT_WEEK,
+  MONTH_DAYS,
 } from "./types";
 import WeekView from "./WeekView";
 import MonthView from "./MonthView";
 
+const SCHEDULE_GROUP_ID = 2;
+
 export default function ScheduleClient() {
   const [viewMode, setViewMode] = useState<ViewMode>("week");
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [weekSchedule, setWeekSchedule] = useState<WeekSchedule>({});
   const [monthSchedule, setMonthSchedule] = useState<MonthSchedule>({});
   const [genKey, setGenKey] = useState(0);
-  const [generating, setGenerating] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredCol, setHoveredCol] = useState<number | null>(null);
 
-  useEffect(() => {
-    Promise.resolve().then(() => {
-      setWeekSchedule(makeWeekSchedule());
-      setMonthSchedule(makeMonthSchedule());
-      setMounted(true);
-    });
-  }, []);
+  const loadSchedule = async () => {
+    console.log("[schedule] loadSchedule called");
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/schedules/work-schedules/${SCHEDULE_GROUP_ID}`);
+      console.log("[schedule] status:", res.status);
+      const json = await res.json();
+      console.log("[schedule] raw response:", json);
+      const data: ScheduleGroupResponse = json.data ?? json;
+      console.log("[schedule] data:", data);
+      if (!data?.days) return;
 
-  const handleGenerate = async () => {
-    if (generating) return;
-    setGenerating(true);
-    await new Promise((r) => setTimeout(r, 120));
-    setWeekSchedule(makeWeekSchedule());
-    setMonthSchedule(makeMonthSchedule());
-    setGenKey((k) => k + 1);
-    await new Promise((r) => setTimeout(r, 900));
-    setGenerating(false);
+      // Collect unique employees and build schedule maps
+      const empMap = new Map<number, Employee>();
+      const wSched: WeekSchedule = {};
+      const mSched: MonthSchedule = {};
+
+      data.days.forEach((day) => {
+        const date = new Date(day.date);
+        const dayOfMonth = date.getDate();
+        const dayOfWeek = date.getDay(); // 0=Sun, 6=Sat
+
+        day.assignments.forEach((a) => {
+          const shift = SHIFT_API_TO_TYPE[a.shiftType] ?? "OFF";
+          if (!empMap.has(a.memberId)) {
+            empMap.set(a.memberId, { id: a.memberId, name: a.memberName });
+          }
+          mSched[`${a.memberId}-${dayOfMonth}`] = shift;
+          if (CURRENT_WEEK.includes(dayOfMonth)) {
+            wSched[`${a.memberId}-${dayOfWeek}`] = shift;
+          }
+        });
+      });
+
+      const empList = Array.from(empMap.values());
+
+      // Fill OFF for missing employee-day combinations
+      empList.forEach((emp) => {
+        for (let d = 0; d < 7; d++) {
+          if (!wSched[`${emp.id}-${d}`]) wSched[`${emp.id}-${d}`] = "OFF";
+        }
+        for (let day = 1; day <= MONTH_DAYS; day++) {
+          if (!mSched[`${emp.id}-${day}`]) mSched[`${emp.id}-${day}`] = "OFF";
+        }
+      });
+
+      setEmployees(empList);
+      setWeekSchedule(wSched);
+      setMonthSchedule(mSched);
+      setGenKey((k) => k + 1);
+    } catch (err) {
+      console.error("[schedule] error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => { loadSchedule(); }, []);
+
   const toggleShift = (empId: number, dayIdx: number) => {
-    if (generating) return;
     const key = `${empId}-${dayIdx}`;
     const idx = SHIFT_CYCLE.indexOf(weekSchedule[key]);
     setWeekSchedule((s) => ({ ...s, [key]: SHIFT_CYCLE[(idx + 1) % SHIFT_CYCLE.length] }));
@@ -93,24 +137,24 @@ export default function ScheduleClient() {
           </motion.button>
           <motion.button
             className="sch-action-btn primary"
-            onClick={handleGenerate}
-            disabled={generating}
-            whileHover={!generating ? { scale: 1.02 } : {}}
-            whileTap={!generating ? { scale: 0.97 } : {}}
+            onClick={loadSchedule}
+            disabled={loading}
+            whileHover={!loading ? { scale: 1.02 } : {}}
+            whileTap={!loading ? { scale: 0.97 } : {}}
           >
             <motion.span style={{ display: "flex", alignItems: "center" }}
-              animate={generating ? { rotate: 360 } : { rotate: 0 }}
-              transition={generating ? { duration: 0.7, repeat: Infinity, ease: "linear" } : { duration: 0 }}
+              animate={loading ? { rotate: 360 } : { rotate: 0 }}
+              transition={loading ? { duration: 0.7, repeat: Infinity, ease: "linear" } : { duration: 0 }}
             >
               <RefreshCw size={13} />
             </motion.span>
-            {generating ? "생성 중..." : "자동 생성"}
+            {loading ? "로딩 중..." : "새로고침"}
           </motion.button>
         </div>
       </div>
 
       {/* View content */}
-      {!mounted ? (
+      {loading && employees.length === 0 ? (
         <div style={{ height: 400, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)", fontSize: 13 }}>
           로딩 중...
         </div>
@@ -125,6 +169,7 @@ export default function ScheduleClient() {
           >
             {viewMode === "week" ? (
               <WeekView
+                employees={employees}
                 schedule={weekSchedule}
                 genKey={genKey}
                 hoveredRow={hoveredRow}
@@ -134,7 +179,7 @@ export default function ScheduleClient() {
                 toggleShift={toggleShift}
               />
             ) : (
-              <MonthView schedule={monthSchedule} genKey={genKey} />
+              <MonthView employees={employees} schedule={monthSchedule} genKey={genKey} />
             )}
           </motion.div>
         </AnimatePresence>

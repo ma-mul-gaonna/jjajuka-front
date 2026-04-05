@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  Employee,
   ShiftType,
   MonthSchedule,
-  EMPLOYEES,
   DAYS,
   SHIFT_META,
   MONTH_START_OFFSET,
@@ -15,12 +15,13 @@ import {
 import Legend from "./Legend";
 
 interface MonthViewProps {
+  employees: Employee[];
   schedule: MonthSchedule;
   genKey: number;
   vacancyDays?: Record<number, string[]>;
 }
 
-export default function MonthView({ schedule, genKey, vacancyDays = {} }: MonthViewProps) {
+export default function MonthView({ employees = [], schedule, genKey, vacancyDays = {} }: MonthViewProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const totalCells = MONTH_START_OFFSET + MONTH_DAYS;
@@ -28,7 +29,7 @@ export default function MonthView({ schedule, genKey, vacancyDays = {} }: MonthV
 
   const getDaySummary = (day: number) => {
     const counts = { AM: 0, PM: 0, NIGHT: 0 };
-    EMPLOYEES.forEach((emp) => {
+    employees.forEach((emp) => {
       const s = schedule[`${emp.id}-${day}`];
       if (s !== "OFF") counts[s as keyof typeof counts]++;
     });
@@ -36,7 +37,7 @@ export default function MonthView({ schedule, genKey, vacancyDays = {} }: MonthV
   };
 
   const getEmpShifts = (day: number) =>
-    EMPLOYEES.map((emp) => ({ ...emp, shift: schedule[`${emp.id}-${day}`] as ShiftType }))
+    employees.map((emp) => ({ ...emp, shift: schedule[`${emp.id}-${day}`] as ShiftType }))
       .filter((e) => e.shift !== "OFF");
 
   return (

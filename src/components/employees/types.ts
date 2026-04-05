@@ -13,24 +13,31 @@ export interface Employee {
 }
 
 // ─── API Types ───────────────────────────────────────────
+export type Skills = "GRADE_A" | "GRADE_B" | "GRADE_C";
+
+export const SKILLS_TO_GRADE: Record<Skills, Grade> = {
+  GRADE_A: "A",
+  GRADE_B: "B",
+  GRADE_C: "C",
+};
+
 export interface MemberAPI {
   id: number;
   name: string;
   authority: "USER" | "ADMIN";
   position: string | null;
-  grade: string | null;
+  skills: Skills | null;
   phoneNumber: string | null;
   hireDate: string | null;
   employmentStatus: string | null;
 }
 
 export function mapMember(m: MemberAPI): Employee {
-  const pos = m.position as Position | null;
   return {
     id: m.id,
     name: m.name,
-    grade: (["A", "B", "C"].includes(m.grade ?? "") ? m.grade as Grade : positionToGrade(pos)),
-    role: pos ? (POSITION_OPTIONS.find((p) => p.value === pos)?.label ?? "—") : (m.authority === "ADMIN" ? "관리자" : "—"),
+    grade: m.skills ? (SKILLS_TO_GRADE[m.skills] ?? "C") : "C",
+    role: m.position ?? "—",
     phone: m.phoneNumber ?? "—",
     joinDate: m.hireDate ?? "—",
     status: m.employmentStatus === "LEAVE" ? "leave" : "active",
@@ -55,27 +62,13 @@ export const GRADE_META: Record<Grade, { label: string; color: string; bg: strin
   C: { label: "C등급", color: "#6B7280", bg: "#F9FAFB", desc: "신규/초급" },
 };
 
-export type Position = "JEONMU" | "GWAJANG" | "CHAJANG" | "DAERI" | "JUIM" | "SAWON";
-
-export const POSITION_OPTIONS: { value: Position; label: string; grade: Grade }[] = [
-  { value: "JEONMU", label: "전무", grade: "A" },
-  { value: "GWAJANG", label: "과장", grade: "A" },
-  { value: "CHAJANG", label: "차장", grade: "A" },
-  { value: "DAERI", label: "대리", grade: "B" },
-  { value: "JUIM", label: "주임", grade: "B" },
-  { value: "SAWON", label: "사원", grade: "C" },
-];
-
-export function positionToGrade(position: Position | null): Grade {
-  const found = POSITION_OPTIONS.find((p) => p.value === position);
-  return found?.grade ?? "C";
-}
 
 export const EMPTY_FORM = {
   name: "",
   loginId: "",
   password: "",
-  position: "SAWON" as Position,
+  position: "",
+  skills: "GRADE_A" as Skills,
   phoneNumber: "",
   hireDate: "",
 };

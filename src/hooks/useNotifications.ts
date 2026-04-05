@@ -5,15 +5,15 @@ import { useAuthStore } from "@/store/authStore";
 import { useNotificationStore, Notification } from "@/store/notificationStore";
 
 export function useNotifications() {
-  const { user } = useAuthStore();
+  const { user, authority } = useAuthStore();
   const { setNotifications, addNotification } = useNotificationStore();
   const notiEsRef = useRef<EventSource | null>(null);
   const vacancyEsRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || authority !== "ADMIN") return;
 
-    // 초기 알림 목록 fetch (Next.js 프록시 경유)
+    // 초기 알림 목록 fetch
     fetch(`/api/notifications?receiverId=${user.id}`)
       .then((res) => res.json())
       .then((body) => {

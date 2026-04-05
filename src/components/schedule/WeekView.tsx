@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import {
+  Employee,
   WeekSchedule,
-  EMPLOYEES,
   DAYS,
   DATES,
   SHIFT_META,
@@ -11,6 +11,7 @@ import {
 import Legend from "./Legend";
 
 interface WeekViewProps {
+  employees: Employee[];
   schedule: WeekSchedule;
   genKey: number;
   hoveredRow: number | null;
@@ -20,10 +21,10 @@ interface WeekViewProps {
   toggleShift: (empId: number, dayIdx: number) => void;
 }
 
-export default function WeekView({ schedule, genKey, hoveredRow, hoveredCol, setHoveredRow, setHoveredCol, toggleShift }: WeekViewProps) {
+export default function WeekView({ employees = [], schedule, genKey, hoveredRow, hoveredCol, setHoveredRow, setHoveredCol, toggleShift }: WeekViewProps) {
   const coverage = DAYS.map((_, d) => ({
-    active: EMPLOYEES.filter((e) => schedule[`${e.id}-${d}`] !== "OFF").length,
-    hasNightSenior: EMPLOYEES.some((e) => schedule[`${e.id}-${d}`] === "NIGHT" && e.grade === "A"),
+    active: employees.filter((e) => schedule[`${e.id}-${d}`] !== "OFF").length,
+    hasNightSenior: employees.some((e) => schedule[`${e.id}-${d}`] === "NIGHT" && e.grade === "A"),
   }));
   const weeklyCount = (empId: number) => DAYS.filter((_, d) => schedule[`${empId}-${d}`] !== "OFF").length;
 
@@ -41,13 +42,15 @@ export default function WeekView({ schedule, genKey, hoveredRow, hoveredCol, set
           <div className="sch-week-col sch-corner">주간</div>
         </div>
 
-        {EMPLOYEES.map((emp, eIdx) => (
+        {employees.map((emp, eIdx) => (
           <div key={emp.id} className={`sch-row ${hoveredRow === emp.id ? "row-hl" : ""} ${hoveredRow !== null && hoveredRow !== emp.id ? "row-dim" : ""}`}>
             <div className="sch-emp-col sch-emp-label" onMouseEnter={() => setHoveredRow(emp.id)} onMouseLeave={() => setHoveredRow(null)}>
-              <div className={`sch-avatar grade-${emp.grade.toLowerCase()}`}>{emp.name[0]}</div>
+              <div className={`sch-avatar grade-${emp.grade?.toLowerCase() ?? "b"}`}>{emp.name[0]}</div>
               <div className="sch-emp-info">
                 <span className="sch-emp-name">{emp.name}</span>
-                <span className={`sch-emp-grade grade-${emp.grade.toLowerCase()}`}>{emp.grade}등급</span>
+                {emp.grade && (
+                  <span className={`sch-emp-grade grade-${emp.grade.toLowerCase()}`}>{emp.grade}등급</span>
+                )}
               </div>
             </div>
             {DAYS.map((_, d) => {
@@ -92,13 +95,13 @@ export default function WeekView({ schedule, genKey, hoveredRow, hoveredCol, set
             <div key={d} className="sch-day-col sch-cov-cell">
               <div className="sch-cov-track">
                 <motion.div key={`cov-${genKey}-${d}`} className="sch-cov-fill"
-                  initial={{ scaleX: 0 }} animate={{ scaleX: cov.active / EMPLOYEES.length }}
+                  initial={{ scaleX: 0 }} animate={{ scaleX: cov.active / employees.length }}
                   transition={{ delay: d * 0.06 + 0.25, duration: 0.5, ease: "easeOut" }}
                   style={{ transformOrigin: "left" }}
                 />
               </div>
               <div className="sch-cov-bottom">
-                <span className="sch-cov-count">{cov.active}<span className="sch-cov-total">/{EMPLOYEES.length}</span></span>
+                <span className="sch-cov-count">{cov.active}<span className="sch-cov-total">/{employees.length}</span></span>
                 {!cov.hasNightSenior && (
                   <motion.span className="sch-cov-warn" title="야간 A등급 미배치"
                     initial={{ scale: 0 }} animate={{ scale: 1 }}

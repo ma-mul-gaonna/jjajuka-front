@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
+import Image from "next/image";
 
 interface NavItem {
   label: string;
@@ -33,7 +34,11 @@ const adminNav: NavItem[] = [
   },
   { label: "규칙 설정", href: "/admin/rules", icon: <Settings2 size={18} /> },
   { label: "직원 관리", href: "/admin/employees", icon: <Users size={18} /> },
-  { label: "대체인력 추천", href: "/admin/substitute", icon: <Sparkles size={18} /> },
+  {
+    label: "대체인력 추천",
+    href: "/admin/substitute",
+    icon: <Sparkles size={18} />,
+  },
 ];
 
 const employeeNav: NavItem[] = [
@@ -45,6 +50,11 @@ const employeeNav: NavItem[] = [
   {
     label: "결원/대타 요청",
     href: "/worker/requests",
+    icon: <ArrowLeftRight size={18} />,
+  },
+  {
+    label: "받은 교대 요청",
+    href: "/worker/shift-swap",
     icon: <ArrowLeftRight size={18} />,
   },
 ];
@@ -67,7 +77,14 @@ export default function Sidebar({ role }: SidebarProps) {
         <div className="sidebar-logo-icon">
           <CalendarDays size={20} color="#FFF" />
         </div>
-        <span className="sidebar-logo-text">짜주까</span>
+        {/* <span className="sidebar-logo-text">짜주까</span> */}
+        <Image
+          src="/JJAJUKA_LOGO_WHITE.svg"
+          alt="짜주까 로고"
+          width={64}
+          height={64}
+          className="sidebar-logo-image"
+        />
       </div>
 
       {/* Role Badge */}
@@ -104,7 +121,9 @@ export default function Sidebar({ role }: SidebarProps) {
             {user?.name?.[0] ?? "?"}
           </div>
           <div className="sidebar-user-info">
-            <p className="sidebar-user-name" suppressHydrationWarning>{user?.name ?? "-"}</p>
+            <p className="sidebar-user-name" suppressHydrationWarning>
+              {user?.name ?? "-"}
+            </p>
             <p className="sidebar-user-role">
               {role === "admin" ? "관리자" : "직원"}
             </p>

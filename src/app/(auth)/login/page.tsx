@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { login } from "@/features/auth/api/authApi";
-
+import Image from "next/image";
 export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -20,9 +20,16 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { id, name, loginId: resLoginId, authority } = await login({ loginId, password });
+      const {
+        id,
+        name,
+        loginId: resLoginId,
+        authority,
+      } = await login({ loginId, password });
       setAuth(authority, { id, name, loginId: resLoginId });
-      router.replace(authority === "ADMIN" ? "/admin/dashboard" : "/worker/my-schedule");
+      router.replace(
+        authority === "ADMIN" ? "/admin/dashboard" : "/worker/my-schedule",
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : "로그인에 실패했습니다.");
     } finally {
@@ -33,7 +40,14 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-box">
-        <div className="login-logo">짜주까</div>
+        {/* <div className="login-logo">짜주까</div> */}
+        <Image
+          src="/JJAJUKA_LOGO.svg"
+          alt="짜주까 로고"
+          width={80}
+          height={80}
+          className="login-logo"
+        />
         <p className="login-sub">AI 기반 근무표 자동 생성 서비스</p>
 
         <form onSubmit={handleSubmit} className="login-form">

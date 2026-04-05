@@ -4,7 +4,7 @@ import MyScheduleClient from "@/components/my-schedule/MyScheduleClient";
 export default function MySchedulePage() {
   return (
     <div className="page">
-      <Header title="내 근무표" />
+      <Header title="내 근무표" role="worker" />
       <div className="page-content">
         <MyScheduleClient />
       </div>

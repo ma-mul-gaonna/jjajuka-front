@@ -17,46 +17,95 @@ import Link from "next/link";
 import MonthView from "@/components/schedule/MonthView";
 import WeekView from "@/components/schedule/WeekView";
 import {
-  makeMonthSchedule,
-  makeWeekSchedule,
+  Employee,
   MonthSchedule,
   WeekSchedule,
+  ScheduleGroupResponse,
+  SHIFT_API_TO_TYPE,
   SHIFT_CYCLE,
   ViewMode,
+  CURRENT_WEEK,
+  MONTH_DAYS,
 } from "@/components/schedule/types";
 
-// ─── Mock 데이터 ─────────────────────────────────────────
-const VACANCY_COUNT = 3;
-
-// 결원이 발생한 날짜 (3월 기준 목데이터)
-const VACANCY_DAYS: Record<number, string[]> = {
-  7: ["김철수"],
-  15: ["이서연", "박지호"],
-  22: ["윤성민"],
-};
-
-const SCORE_CARDS = [
-  { label: "결원 요청", value: 8, color: "#111" },
-  { label: "결원 요청 수락", value: 5, color: "#111" },
-  { label: "결원 요청 거절", value: 1, color: "#111" },
-];
+const DEFAULT_SCHEDULE_GROUP_ID = 2;
 
 // ─── Component ───────────────────────────────────────────
 export default function HomeClient() {
   const [viewMode, setViewMode] = useState<ViewMode>("month");
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [weekSchedule, setWeekSchedule] = useState<WeekSchedule>({});
   const [monthSchedule, setMonthSchedule] = useState<MonthSchedule>({});
   const [genKey] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  const [scheduleLoaded, setScheduleLoaded] = useState(false);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredCol, setHoveredCol] = useState<number | null>(null);
+  const [dashboardStats, setDashboardStats] = useState({
+    vacancyRequestCount: 0,
+    vacancyAcceptCount: 0,
+    vacancyRejectCount: 0,
+  });
 
   useEffect(() => {
-    Promise.resolve().then(() => {
-      setWeekSchedule(makeWeekSchedule());
-      setMonthSchedule(makeMonthSchedule());
-      setMounted(true);
-    });
+    const scheduleGroupId = Number(localStorage.getItem("scheduleGroupId")) || DEFAULT_SCHEDULE_GROUP_ID;
+    fetch(`/api/schedules/work-schedules/${scheduleGroupId}`)
+      .then((res) => res.json())
+      .then((json) => {
+        console.log("[home/schedule] raw:", json);
+        const data: ScheduleGroupResponse = json.data ?? json;
+        if (!data?.days) { setScheduleLoaded(true); return; }
+
+        const empMap = new Map<number, Employee>();
+        const wSched: WeekSchedule = {};
+        const mSched: MonthSchedule = {};
+
+        data.days.forEach((day) => {
+          const date = new Date(day.date);
+          const dayOfMonth = date.getDate();
+          const dayOfWeek = date.getDay();
+          day.assignments.forEach((a) => {
+            const shift = SHIFT_API_TO_TYPE[a.shiftType] ?? "OFF";
+            if (!empMap.has(a.memberId)) {
+              empMap.set(a.memberId, { id: a.memberId, name: a.memberName });
+            }
+            mSched[`${a.memberId}-${dayOfMonth}`] = shift;
+            if (CURRENT_WEEK.includes(dayOfMonth)) {
+              wSched[`${a.memberId}-${dayOfWeek}`] = shift;
+            }
+          });
+        });
+
+        const empList = Array.from(empMap.values());
+        empList.forEach((emp) => {
+          for (let d = 0; d < 7; d++) {
+            if (!wSched[`${emp.id}-${d}`]) wSched[`${emp.id}-${d}`] = "OFF";
+          }
+          for (let day = 1; day <= MONTH_DAYS; day++) {
+            if (!mSched[`${emp.id}-${day}`]) mSched[`${emp.id}-${day}`] = "OFF";
+          }
+        });
+
+        setEmployees(empList);
+        setWeekSchedule(wSched);
+        setMonthSchedule(mSched);
+        setScheduleLoaded(true);
+      })
+      .catch((err) => {
+        console.error("[home/schedule] error:", err);
+        setScheduleLoaded(true);
+      });
+
+    fetch("/api/dashboard")
+      .then((res) => res.json())
+      .then((json) => {
+        const data = json.data ?? json;
+        setDashboardStats({
+          vacancyRequestCount: data.vacancyRequestCount ?? 0,
+          vacancyAcceptCount: data.vacancyAcceptCount ?? 0,
+          vacancyRejectCount: data.vacancyRejectCount ?? 0,
+        });
+      })
+      .catch(() => {});
   }, []);
 
   const toggleShift = (empId: number, dayIdx: number) => {
@@ -71,7 +120,7 @@ export default function HomeClient() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       {/* 결원 요청 배너 */}
-      {VACANCY_COUNT > 0 && (
+      {dashboardStats.vacancyRequestCount > 0 && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -124,7 +173,7 @@ export default function HomeClient() {
                   color: "#fff",
                 }}
               >
-                {VACANCY_COUNT}건
+                {dashboardStats.vacancyRequestCount}건
               </span>
             </div>
             <p
@@ -191,7 +240,11 @@ export default function HomeClient() {
         }}
       >
         {/* 스코어 3칸 */}
-        {SCORE_CARDS.map((card) => (
+        {[
+          { label: "결원 요청", value: dashboardStats.vacancyRequestCount },
+          { label: "결원 요청 수락", value: dashboardStats.vacancyAcceptCount },
+          { label: "결원 요청 거절", value: dashboardStats.vacancyRejectCount },
+        ].map((card) => (
           <div
             key={card.label}
             style={{
@@ -203,7 +256,7 @@ export default function HomeClient() {
             <p style={{ fontSize: 12, color: "var(--text-secondary)", fontWeight: 500, marginBottom: 8 }}>
               {card.label}
             </p>
-            <p style={{ fontSize: 28, fontWeight: 800, color: card.color, lineHeight: 1, margin: 0 }}>
+            <p style={{ fontSize: 28, fontWeight: 800, color: "#111", lineHeight: 1, margin: 0 }}>
               {card.value}
               <span style={{ fontSize: 13, fontWeight: 500, marginLeft: 3 }}>건</span>
             </p>
@@ -285,7 +338,7 @@ export default function HomeClient() {
 
         {/* 캘린더 뷰 */}
         <div style={{ padding: "16px 20px" }}>
-          {!mounted ? (
+          {!scheduleLoaded ? (
             <div
               style={{
                 height: 400,
@@ -309,12 +362,13 @@ export default function HomeClient() {
               >
                 {viewMode === "month" ? (
                   <MonthView
+                    employees={employees}
                     schedule={monthSchedule}
                     genKey={genKey}
-                    vacancyDays={VACANCY_DAYS}
                   />
                 ) : (
                   <WeekView
+                    employees={employees}
                     schedule={weekSchedule}
                     genKey={genKey}
                     hoveredRow={hoveredRow}

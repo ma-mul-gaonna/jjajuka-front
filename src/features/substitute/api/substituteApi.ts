@@ -1,43 +1,39 @@
-export type ShiftType = "DAY" | "EVENING" | "NIGHT";
+export type ShiftType = "DAY" | "EVENING" | "NIGHT" | "MORNING";
 
-export interface VacancyInfo {
+export interface AbsenceInfo {
+  userId: number;
+  date: string;
+  shiftName: string;
+}
+
+export interface RecommendationItem {
+  rank: number;
+  userId: number;
+  userName: string;
+  score: number;
+  reasons: string;
+}
+
+export interface RecommendationResponse {
+  status: string;
+  message: string;
+  absence: AbsenceInfo;
+  recommendations: RecommendationItem[];
+  warnings: string[];
+}
+
+export interface VacancyItem {
+  vacancyId: number;
   memberId: number;
   memberName: string;
   scheduleId: number;
-  workDate: string;
-  shiftType: ShiftType;
+  schedule: { workDate: string; shiftType: string; status: string };
   reason: string;
+  status: string;
+  createdAt: string;
 }
 
-export interface AvailableSchedule {
-  scheduleId: number;
-  workDate: string;
-  shiftType: ShiftType;
-}
-
-export interface Recommendation {
-  rank: number;
-  candidateMemberId: number;
-  candidateName: string;
-  matchScore: number;
-  reason: string;
-  availableSchedules: AvailableSchedule[];
-}
-
-export interface RecommendationData {
-  vacancyId: number;
-  vacancyInfo: VacancyInfo;
-  recommendations: Recommendation[];
-  totalCandidates: number;
-}
-
-export async function fetchRecommendations(vacancyId: number): Promise<RecommendationData> {
-  const res = await fetch(`/api/replacement-recommendations?vacancyId=${vacancyId}`);
-  const json = await res.json();
-
-  if (!json.success) {
-    throw new Error(json.error?.message ?? "추천 인력을 불러오지 못했습니다.");
-  }
-
-  return json.data;
+export interface VacancyWithRecommendations {
+  vacancy: VacancyItem;
+  recommendation: RecommendationResponse | null;
 }
