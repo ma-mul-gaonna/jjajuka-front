@@ -62,7 +62,7 @@ export const SHIFT_META: Record<ShiftType, { label: string; time: string; bg: st
 // April 2026: starts on Wednesday → Sun-first offset = 3 (일=0,월=1,화=2,수=3)
 export const MONTH_START_OFFSET = 3;
 export const MONTH_DAYS = 30;
-export const CURRENT_WEEK = [30, 31, 1, 2, 3, 4, 5]; // 3/30~4/5 (이번 주)
+export const CURRENT_WEEK = [20, 21, 22, 23, 24, 25, 26]; // 4/20~4/26 (이번 주)
 export const TODAY = 26; // 2026-04-26 (일)
 
 // ─── Data generators ─────────────────────────────────────
