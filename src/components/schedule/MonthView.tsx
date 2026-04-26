@@ -19,19 +19,21 @@ interface MonthViewProps {
   schedule: MonthSchedule;
   genKey: number;
   vacancyDays?: Record<number, string[]>;
+  dayCounts?: Record<number, { AM: number; PM: number; NIGHT: number }>;
 }
 
-export default function MonthView({ employees = [], schedule, genKey, vacancyDays = {} }: MonthViewProps) {
+export default function MonthView({ employees = [], schedule, genKey, vacancyDays = {}, dayCounts }: MonthViewProps) {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const totalCells = MONTH_START_OFFSET + MONTH_DAYS;
   const rows = Math.ceil(totalCells / 7);
 
   const getDaySummary = (day: number) => {
+    if (dayCounts?.[day]) return dayCounts[day];
     const counts = { AM: 0, PM: 0, NIGHT: 0 };
     employees.forEach((emp) => {
       const s = schedule[`${emp.id}-${day}`];
-      if (s !== "OFF") counts[s as keyof typeof counts]++;
+      if (s && s !== "OFF") counts[s as keyof typeof counts]++;
     });
     return counts;
   };

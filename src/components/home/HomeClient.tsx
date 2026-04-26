@@ -38,6 +38,7 @@ export default function HomeClient() {
   const [monthSchedule, setMonthSchedule] = useState<MonthSchedule>({});
   const [genKey] = useState(0);
   const [scheduleLoaded, setScheduleLoaded] = useState(false);
+  const [dayCounts, setDayCounts] = useState<Record<number, { AM: number; PM: number; NIGHT: number }>>({});
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [hoveredCol, setHoveredCol] = useState<number | null>(null);
   const [dashboardStats, setDashboardStats] = useState({
@@ -59,10 +60,18 @@ export default function HomeClient() {
         const wSched: WeekSchedule = {};
         const mSched: MonthSchedule = {};
 
+        const counts: Record<number, { AM: number; PM: number; NIGHT: number }> = {};
         data.days.forEach((day) => {
           const date = new Date(day.date);
           const dayOfMonth = date.getDate();
           const dayOfWeek = date.getDay();
+
+          counts[dayOfMonth] = {
+            AM: day.dayCount ?? 0,
+            PM: day.eveningCount ?? 0,
+            NIGHT: day.nightCount ?? 0,
+          };
+
           day.assignments.forEach((a) => {
             const shift = SHIFT_API_TO_TYPE[a.shiftType] ?? "OFF";
             if (!empMap.has(a.memberId)) {
@@ -74,6 +83,7 @@ export default function HomeClient() {
             }
           });
         });
+        setDayCounts(counts);
 
         const empList = Array.from(empMap.values());
         empList.forEach((emp) => {
@@ -313,7 +323,7 @@ export default function HomeClient() {
                 <ChevronLeft size={15} />
               </button>
               <span className="sch-week-label">
-                {viewMode === "week" ? "2026년 3월 4주차" : "2026년 3월"}
+                {viewMode === "week" ? "2026년 4월 1주차" : "2026년 4월"}
               </span>
               <button className="sch-nav-btn">
                 <ChevronRight size={15} />
@@ -365,6 +375,7 @@ export default function HomeClient() {
                     employees={employees}
                     schedule={monthSchedule}
                     genKey={genKey}
+                    dayCounts={dayCounts}
                   />
                 ) : (
                   <WeekView

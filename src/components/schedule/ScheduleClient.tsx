@@ -112,7 +112,7 @@ export default function ScheduleClient() {
           <div className="sch-week-nav">
             <button className="sch-nav-btn"><ChevronLeft size={15} /></button>
             <span className="sch-week-label">
-              {viewMode === "week" ? "2026년 3월 4주차" : "2026년 3월"}
+              {viewMode === "week" ? "2026년 4월 1주차" : "2026년 4월"}
             </span>
             <button className="sch-nav-btn"><ChevronRight size={15} /></button>
           </div>

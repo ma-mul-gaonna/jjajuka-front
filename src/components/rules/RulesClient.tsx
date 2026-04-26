@@ -66,22 +66,28 @@ export default function RulesClient() {
     }
 
     try {
+      const body = {
+        scheduleYearMonth,
+        reason: `${scheduleYearMonth} 근무표 자동 생성`,
+        rule: {
+          minRestHours:       constraint.minRestHours,
+          maxConsecutiveDays: constraint.maxConsecutiveDays,
+          maxShiftsPerDay:    constraint.maxShiftsPerDay,
+          requiredCount:      constraint.requiredCount,
+          customValues:       rules.map((r) => r.text),
+        },
+        userRequests: rules.map((r) => r.text),
+      };
+      console.log("[generate-with-rules] body:", JSON.stringify(body, null, 2));
       const res = await fetch("/api/schedules/work-schedules/generate-with-rules", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          scheduleYearMonth,
-          reason: `${scheduleYearMonth} 근무표 자동 생성`,
-          rule: {
-            minRestHours:       constraint.minRestHours,
-            maxConsecutiveDays: constraint.maxConsecutiveDays,
-            maxShiftsPerDay:    constraint.maxShiftsPerDay,
-            requiredCount:      constraint.requiredCount,
-            customValues:       rules.map((r) => r.text),
-          },
-          userRequests: rules.map((r) => r.text),
-        }),
+        body: JSON.stringify(body),
       });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.log("[generate-with-rules] error response:", errText);
+      }
       if (res.ok) {
         const json = await res.json();
         const groupId = (json.data ?? json).scheduleGroupId;

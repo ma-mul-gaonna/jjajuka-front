@@ -59,11 +59,11 @@ export const SHIFT_META: Record<ShiftType, { label: string; time: string; bg: st
   OFF:   { label: "휴무", time: "—",     bg: "#F9FAFB", color: "#9CA3AF", dot: "#E5E7EB" },
 };
 
-// March 2026: starts on Sunday → Sun-first offset = 0
-export const MONTH_START_OFFSET = 0;
-export const MONTH_DAYS = 31;
-export const CURRENT_WEEK = [23, 24, 25, 26, 27, 28, 29];
-export const TODAY = 25; // 2026-03-25 (목)
+// April 2026: starts on Wednesday → Mon-first offset = 2
+export const MONTH_START_OFFSET = 2;
+export const MONTH_DAYS = 30;
+export const CURRENT_WEEK = [30, 31, 1, 2, 3, 4, 5]; // 3/30~4/5 (이번 주)
+export const TODAY = 5; // 2026-04-05 (일)
 
 // ─── Data generators ─────────────────────────────────────
 export function makeWeekSchedule(): WeekSchedule {
