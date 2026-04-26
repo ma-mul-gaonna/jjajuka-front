@@ -48,7 +48,7 @@ export const EMPLOYEES: Employee[] = [
   { id: 7, name: "윤성민", grade: "A" },
 ];
 
-export const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+export const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 export const DATES = ["04/20", "04/21", "04/22", "04/23", "04/24", "04/25", "04/26"];
 export const SHIFT_CYCLE: ShiftType[] = ["AM", "PM", "NIGHT", "OFF"];
 

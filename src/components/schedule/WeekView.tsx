@@ -21,12 +21,15 @@ interface WeekViewProps {
   toggleShift: (empId: number, dayIdx: number) => void;
 }
 
+// 월요일 시작 인덱스 → JS dayOfWeek (0=일, 1=월, ..., 6=토)
+const toJsDay = (d: number) => d < 6 ? d + 1 : 0;
+
 export default function WeekView({ employees = [], schedule, genKey, hoveredRow, hoveredCol, setHoveredRow, setHoveredCol, toggleShift }: WeekViewProps) {
   const coverage = DAYS.map((_, d) => ({
-    active: employees.filter((e) => schedule[`${e.id}-${d}`] !== "OFF").length,
-    hasNightSenior: employees.some((e) => schedule[`${e.id}-${d}`] === "NIGHT" && e.grade === "A"),
+    active: employees.filter((e) => schedule[`${e.id}-${toJsDay(d)}`] !== "OFF").length,
+    hasNightSenior: employees.some((e) => schedule[`${e.id}-${toJsDay(d)}`] === "NIGHT" && e.grade === "A"),
   }));
-  const weeklyCount = (empId: number) => DAYS.filter((_, d) => schedule[`${empId}-${d}`] !== "OFF").length;
+  const weeklyCount = (empId: number) => DAYS.filter((_, d) => schedule[`${empId}-${toJsDay(d)}`] !== "OFF").length;
 
   return (
     <div className="sch-outer">
@@ -34,7 +37,7 @@ export default function WeekView({ employees = [], schedule, genKey, hoveredRow,
         <div className="sch-row sch-header-row">
           <div className="sch-emp-col sch-corner" />
           {DAYS.map((day, d) => (
-            <div key={d} className={`sch-day-col sch-header-day ${d === 0 ? "sunday" : d === 6 ? "saturday" : ""} ${hoveredCol === d ? "col-hl" : ""}`}>
+            <div key={d} className={`sch-day-col sch-header-day ${d === 6 ? "sunday" : d === 5 ? "saturday" : ""} ${hoveredCol === d ? "col-hl" : ""}`}>
               <span className="sch-hd-name">{day}</span>
               <span className="sch-hd-date">{DATES[d]}</span>
             </div>
@@ -54,10 +57,10 @@ export default function WeekView({ employees = [], schedule, genKey, hoveredRow,
               </div>
             </div>
             {DAYS.map((_, d) => {
-              const meta = SHIFT_META[schedule[`${emp.id}-${d}`]];
+              const meta = SHIFT_META[schedule[`${emp.id}-${toJsDay(d)}`]];
               const dimCol = hoveredCol !== null && hoveredCol !== d && hoveredRow === null;
               return (
-                <div key={d} className={`sch-day-col sch-shift-cell ${d === 0 ? "sunday" : d === 6 ? "saturday" : ""} ${hoveredCol === d ? "col-hl" : ""} ${dimCol ? "col-dim" : ""}`}
+                <div key={d} className={`sch-day-col sch-shift-cell ${d === 6 ? "sunday" : d === 5 ? "saturday" : ""} ${hoveredCol === d ? "col-hl" : ""} ${dimCol ? "col-dim" : ""}`}
                   onMouseEnter={() => setHoveredCol(d)} onMouseLeave={() => setHoveredCol(null)}
                   onClick={() => toggleShift(emp.id, d)}
                 >
