@@ -49,7 +49,7 @@ export const EMPLOYEES: Employee[] = [
 ];
 
 export const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
-export const DATES = ["03/23", "03/24", "03/25", "03/26", "03/27", "03/28", "03/29"];
+export const DATES = ["04/20", "04/21", "04/22", "04/23", "04/24", "04/25", "04/26"];
 export const SHIFT_CYCLE: ShiftType[] = ["AM", "PM", "NIGHT", "OFF"];
 
 export const SHIFT_META: Record<ShiftType, { label: string; time: string; bg: string; color: string; dot: string }> = {
